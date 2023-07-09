@@ -2,7 +2,7 @@ DROP DATABASE IF EXISTS vk;
 CREATE DATABASE vk;
 USE vk;
 
--- по возможности можно статью которая в подробностя обесняте про INDEX и  foreign key не совсем в них разобрался
+-- по возможности можно статью которая в подробностя обесняте про INDEX и  FOREIGN KEY не совсем в них разобрался
 
 -- Написать скрипт, добавляющий в созданную БД vk 2-3 новые таблицы (с перечнем полей, указанием индексов и внешних ключей) (CREATE TABLE)
 -- 1)
@@ -10,16 +10,16 @@ USE vk;
 DROP TABLE IF EXISTS stickers;
 CREATE TABLE stickers (
 	id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY, 
-	`new` varchar(200),
-    popular varchar(200),
-	animated varchar(200),
-    style varchar(200),
-    free varchar(200) UNIQUE,
-    my_stickers varchar(200) UNIQUE,
+	`new` VARCHAR(200),
+        popular VARCHAR(200),
+	animated VARCHAR(200),
+        style VARCHAR(200),
+        `free`VARCHAR(200) UNIQUE,
+        my_stickers VARCHAR(200) UNIQUE,
     
     INDEX stickers_popular_my_sticker(popular, my_stickers),
     
-    foreign key(my_stickers) references users(id)
+   FOREIGN KEY(my_stickers) REFERENCES users(id)
     
 ) COMMENT 'стикеры';
 
@@ -33,7 +33,7 @@ CREATE TABLE music (
     
 	INDEX music_name_of_the_track_track_length(name_of_the_track, track_length),
     
-     foreign key(music) references users(id)
+     FOREIGN KEY(music) REFERENCES users(id)
      ) COMMENT 'музыка';
      -- Заполнить 2 таблицы БД vk данными (по 10 записей в каждой таблице) (INSERT)
 INSERT INTO `music` (`name_of_the_track`,`artist_name`,`track_length`) VALUES ('Thunder','Image Dragons', '00:3:07');
@@ -83,7 +83,7 @@ CREATE TABLE `profiles` (
     birthday DATE,
 	photo_id BIGINT UNSIGNED NULL,
     created_at DATETIME DEFAULT NOW(),
-    hometown VARCHAR(100)
+    hometown C(100)
 	
     -- , FOREIGN KEY (photo_id) REFERENCES media(id) -- пока рано, т.к. таблицы media еще нет
 );
