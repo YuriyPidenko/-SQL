@@ -712,25 +712,63 @@ INSERT INTO `likes` VALUES
 ('14','14','14','1973-01-27 23:11:53')
 ; 
 
--- Написать скрипт, возвращающий список имен (только firstname) пользователей без повторений в алфавитном порядке
-SELECT DISTINCT firstname FROM users;
-
---  Выведите количество мужчин старше 35 лет [COUNT].
+-- Подсчитать количество групп (сообществ), в которые вступил каждый пользователь.
 SELECT
-count(*) 
-FROM`profiles`
-WHERE
-date_sub(curdate(), INTERVAL 35 YEAR) >=  birthday;
+	CONCAT(firstname, ' ', lastname) AS owner,
+	COUNT(*)
+FROM users u
+JOIN users_communities uc ON u.id = uc.user_id
+GROUP BY u.id
+ORDER BY COUNT(*) DESC
 
 
--- * Выведите номер пользователя, который отправил больше всех заявок в друзья (таблица friend_requests) [LIMIT].
-SELECT user_id, count(*) AS total_requests
-   FROM friend_requests
-   GROUP BY user_id
-   LIMIT 1;
-   
-/* * Выведите названия и номера групп, имена которых состоят из 5 символов [LIKE].
-SELECT    ,
-FROM 
-WHERE    LIKE '_____';
-*/
+-- Подсчитать количество пользователей в каждом сообществе.
+
+SELECT
+	COUNT(*),
+	communities.NAME
+FROM users_communities 
+JOIN communities ON users_communities.community_id = communities.id
+GROUP BY communities.id
+
+-- Пусть задан некоторый пользователь. Из всех пользователей соц. сети найдите человека, 
+-- который больше всех общался с выбранным пользователем (написал ему сообщений).
+
+USE vk;
+
+SELECT 
+	from_user_id
+	, CONCAT(u.firstname, ' ', u.lastname) AS NAME
+	, COUNT(*) AS 'Количество сообщений'
+FROM messages m
+JOIN users u ON u.id = m.from_user_id
+WHERE to_user_id = 1
+GROUP BY from_user_id
+ORDER BY COUNT(*) DESC 
+LIMIT 1;
+
+
+-- * Подсчитать общее количество лайков, которые получили пользователи младше 18 лет..
+
+SELECT 
+	COUNT(*) AS 'Общее кол-во лайков'
+FROM likes
+WHERE user_id IN (
+	SELECT user_id 
+	FROM profiles
+	WHERE TIMESTAMPDIFF(YEAR, birthday, NOW()) < 18);
+
+SELECT * FROM profiles 
+WHERE TIMESTAMPDIFF(YEAR, birthday, NOW()) < 18;
+
+-- * Определить кто больше поставил лайков (всего): мужчины или женщины.
+
+SELECT CASE (gender)
+	WHEN 'm' THEN 'Мужчины'
+	WHEN 'f' THEN 'Женщины'
+    END AS 'Больше лайков ставят:', COUNT(*) as 'Кол-во лайков'
+FROM profiles p 
+JOIN likes l 
+WHERE l.user_id = p.user_id
+GROUP BY gender 
+LIMIT 1; 
